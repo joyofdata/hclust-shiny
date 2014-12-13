@@ -70,7 +70,7 @@ shinyServer(function(input, output, session) {
     rect.dendrogram(dend, k=k, border = 8, lty = 5, lwd = 2)
     
     if(max_branch_gap >= input$minDistance) {
-      abline(h = split_height(), col="red")
+      abline(h = split_height(), col="red", lty=2)
     }
   })
   

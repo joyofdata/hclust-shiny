@@ -16,9 +16,21 @@ shinyUI(fluidPage(
     .span5{max-width:500px; min-width:500px;} 
     #jsonPoints{visibility:hidden}
   "),
-  
   # Application title
   titlePanel("Hierarchical Clustering in Action"),
+  
+  fluidRow(column(12,
+  tags$a(href="http://www.joyofdata.de/blog/","joyofdata.de"),
+  tags$span(style="padding:10px","/"),
+  tags$a(href="https://twitter.com/joyofdata","@joyofdata"),
+  tags$span(style="padding:10px","/"),
+  tags$a(href="http://www.joyofdata.de/blog/hierarchical-clustering-with-r","Hierarchical Clustering with R"),
+  tags$span(style="padding:10px","/"),
+  tags$a(href="https://github.com/joyofdata/hclust-shiny","github.com/joyofdata/hclust-shiny")
+  )
+  ),
+  
+  tags$hr(),
   
   # Sidebar with a slider input for number of bins
   fluidRow(
@@ -43,6 +55,7 @@ shinyUI(fluidPage(
       uiOutput("cssForPoints"),
       div(id="hereComesTheCanvas"),
       HTML(file_content("www/d3_canvas.html")),
+      tags$small("[Shift] + Click to add or remove a point."),
       
       textInput("jsonPoints", "", "[]")
     ),
