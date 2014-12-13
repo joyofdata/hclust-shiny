@@ -9,7 +9,7 @@ library(shiny)
 library(jsonlite)
 library(dendextend)
 
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
   
   points <- reactive({
     json <- input$jsonPoints
@@ -51,7 +51,8 @@ shinyServer(function(input, output) {
       split_height <- input$splitTreeAt
     } else {
       i <- which.max(diff(h()$height))
-      split_height <- h()$height[i]
+      split_height <- (h()$height[i]*0.7+h()$height[i+1]*0.3)
+      updateNumericInput(session, "splitTreeAt", value=split_height)
     }
     return(split_height)
   })

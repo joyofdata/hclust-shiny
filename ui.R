@@ -7,6 +7,10 @@
 
 library(shiny)
 
+file_content <- function(file) {
+  return(readChar(file, file.info(file)$size))
+}
+
 shinyUI(fluidPage(
   tags$style(".span5{max-width:500px; min-width:500px;}"),
   
@@ -29,16 +33,18 @@ shinyUI(fluidPage(
       
       numericInput("minDistance","min. distance",1),
       
+      HTML(file_content("www/apply_heuristic_button.html")),
+      
       uiOutput("cssForPoints"),
       div(id="hereComesTheCanvas"),
-      HTML(readChar("www/d3_canvas.html", file.info("www/d3_canvas.html")$size)),
+      HTML(file_content("www/d3_canvas.html")),
       
       textInput("jsonPoints", "json", "[]")
     ),
     
     # Show a plot of the generated distribution
     column(7,
-      numericInput("splitTreeAt","split tree at",0),
+      numericInput("splitTreeAt","split tree at",value=0,min=0,max=100,step=1),
       plotOutput("treePlot"),
       plotOutput("heights")
     )
