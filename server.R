@@ -79,7 +79,7 @@ shinyServer(function(input, output, session) {
         abline(h = split_height(), col="red", lty=2)
       }
     } else {
-      plot(h(), main="inversions present - hence no splitting performed")
+      plot(h(), main="inversions present - hence no splitting performed", xlab="", sub="")
     }
   })
   
@@ -115,7 +115,7 @@ shinyServer(function(input, output, session) {
       axis(2,at=0:max(num))
       abline(v = split_height(), col="red", lty=2)
     } else {
-      plot(NULL,xlim=c(0,1),ylim=c(0,1))
+      plot(NULL,xlim=c(0,1),ylim=c(0,1),xaxt="n",yaxt="n",xlab="",ylab="")
     }
   })
   
