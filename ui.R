@@ -47,14 +47,82 @@ shinyUI(fluidPage(
         ),selected="single"),
       
       tags$div(style="margin:10px",
-        HTML(file_content("www/apply_heuristic_button.html")),
+        HTML('<script>
+  function applyHeuristic() {
+    $("#splitTreeAt").val("");
+    $("#splitTreeAt").trigger("change");
+  }
+</script>
+<button onclick="applyHeuristic()" style="margin:5px">apply heuristic</button>'),
         numericInput("minDistance","min. max. branching gap",1),
         numericInput("splitTreeAt","split tree at",value="",min=0,max=100,step=1)
       ),
       
       uiOutput("cssForPoints"),
       div(id="hereComesTheCanvas"),
-      HTML(file_content("www/d3_canvas.html")),
+      HTML('<style>svg {border:1px solid black}</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js"></script>
+<script>
+           var canvas = d3.select("div#hereComesTheCanvas").append("svg").attr("width", 400).attr("height", 400).on("click", addPoint).style("background-color","lightgrey");
+           var counter = 0;
+           
+           function addPoint(evt) {
+           
+           if(!d3.event.shiftKey) return;
+           
+           function composeJsonPointSetString() {
+           var locations = d3.selectAll("circle")[0].map(function(el) {
+           return {
+           "id":  d3.select(el).attr("id"),
+           "x": (+d3.select(el).attr("cx"))/4,
+           "y": (+d3.select(el).attr("cy"))/4
+           };
+           });
+           
+           $("#jsonPoints").val(JSON.stringify(locations));
+           $("#jsonPoints").trigger("change");
+           }
+           
+           var drag = d3.behavior.drag()
+           .on("drag", function(){
+           x = +d3.select(this).attr("cx");
+           y = +d3.select(this).attr("cy");
+           
+           x += d3.event.dx;
+           y += d3.event.dy;
+           
+           d3.select(this).attr("cx",x);
+           d3.select(this).attr("cy",y);
+           })
+           .on("dragend", function(){
+           composeJsonPointSetString();
+           });
+           
+           var mouse = d3.mouse(this);
+           var x = mouse[0];
+           var y = mouse[1];
+           
+           d3.select(this)
+           .append("circle")
+           .attr("r", 10).attr("cx", x).attr("cy", y).attr("id","c"+counter)
+           .call(drag)
+           .on("click", 
+           function () {
+           if(!d3.event.shiftKey) return;
+           
+           d3.select(this).remove();
+           d3.event.stopPropagation();
+           composeJsonPointSetString();
+           }
+           )
+           .append("svg:title").text("c"+counter);
+           
+           counter++;
+           
+           composeJsonPointSetString();
+           }
+           
+           </script>'),
       tags$small("[Shift] + Click to add or remove a point."),
       
       textInput("jsonPoints", "", "[]")
