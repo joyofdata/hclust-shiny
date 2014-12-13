@@ -27,8 +27,13 @@ shinyServer(function(input, output, session) {
   h <- reactive({
     if(nrow(points()) <= 2) return(NULL)
     
+    if(input$metric == "euclidian2") {
+      d <- dist(points()[,c("x","y")], method="euclidian")^2
+    } else {
+      d <- dist(points()[,c("x","y")], method=input$metric)
+    }
     h <- hclust(
-      dist(points()[,c("x","y")], method=input$metric), 
+      d, 
       method=input$hclustMethod
     )
     
