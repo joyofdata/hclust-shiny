@@ -52,7 +52,6 @@ shinyServer(function(input, output, session) {
     } else {
       i <- which.max(diff(h()$height))
       split_height <- (h()$height[i]*0.7+h()$height[i+1]*0.3)
-      updateNumericInput(session, "splitTreeAt", value=split_height)
     }
     return(split_height)
   })
@@ -61,15 +60,18 @@ shinyServer(function(input, output, session) {
     if(is.null(h()) || is.null(clusters())) return(NULL)
     
     dend <- as.dendrogram(h())
+    max_branch_gap <- max(diff(h()$height))
     
     # draw the histogram with the specified number of bins
-    plot(dend)
+    plot(dend, main=sprintf("tree split at %.2f - maximum branching height gap is %.2f",split_height(),max_branch_gap))
     
     k <- length(unique(clusters()))
     if(k > 1 && k < nrow(points()))
     rect.dendrogram(dend, k=k, border = 8, lty = 5, lwd = 2)
     
-    abline(h = split_height(), col="red")
+    if(max_branch_gap >= input$minDistance) {
+      abline(h = split_height(), col="red")
+    }
   })
   
   output$jsonTest <- renderTable({
@@ -91,12 +93,14 @@ shinyServer(function(input, output, session) {
     hghts <- h()$height
     
     par(mfrow=c(1,2))
-    plot(density((h()$height)))
+    plot(density((h()$height)), main="density of branching heights", xlab="", ylab="")
     abline(v = split_height(), col="red", lty=2)
     
     seq <- max(0,floor(min(hghts))):floor(max(hghts))
     num <- sapply(seq, function(x){length(unique(stats::cutree(h(),h=x)))})
-    plot(seq, num, ylim=c(0,max(num)), xaxt="n", yaxt="n")
+    plot(seq, num, ylim=c(0,max(num)), xaxt="n", yaxt="n",
+         main="num of clusters (y) when cutting at height (x)",
+         xlab="", ylab="")
     axis(1,at=seq)
     axis(2,at=0:max(num))
     abline(v = split_height(), col="red", lty=2)

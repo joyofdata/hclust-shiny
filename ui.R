@@ -12,7 +12,10 @@ file_content <- function(file) {
 }
 
 shinyUI(fluidPage(
-  tags$style(".span5{max-width:500px; min-width:500px;}"),
+  tags$style("
+    .span5{max-width:500px; min-width:500px;} 
+    #jsonPoints{visibility:hidden}
+  "),
   
   # Application title
   titlePanel("Hierarchical Clustering in Action"),
@@ -31,20 +34,21 @@ shinyUI(fluidPage(
           "canberra"="canberra","binary"="binary","minkowski"="minkowski"
         ),selected="single"),
       
-      numericInput("minDistance","min. distance",1),
-      
-      HTML(file_content("www/apply_heuristic_button.html")),
+      tags$div(style="margin:10px",
+        HTML(file_content("www/apply_heuristic_button.html")),
+        numericInput("minDistance","min. max. branching gap",1),
+        numericInput("splitTreeAt","split tree at",value="",min=0,max=100,step=1)
+      ),
       
       uiOutput("cssForPoints"),
       div(id="hereComesTheCanvas"),
       HTML(file_content("www/d3_canvas.html")),
       
-      textInput("jsonPoints", "json", "[]")
+      textInput("jsonPoints", "", "[]")
     ),
     
     # Show a plot of the generated distribution
     column(7,
-      numericInput("splitTreeAt","split tree at",value=0,min=0,max=100,step=1),
       plotOutput("treePlot"),
       plotOutput("heights")
     )

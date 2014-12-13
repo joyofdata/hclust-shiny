@@ -1,10 +1,12 @@
 <style>svg {border:1px solid black}</style>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js"></script>
 <script>
-var canvas = d3.select("div#hereComesTheCanvas").append("svg").attr("width", 400).attr("height", 400).on("dblclick", addPoint).style("background-color","lightgrey");
+var canvas = d3.select("div#hereComesTheCanvas").append("svg").attr("width", 400).attr("height", 400).on("click", addPoint).style("background-color","lightgrey");
 var counter = 0;
 
-function addPoint() {
+function addPoint(evt) {
+  
+  if(!d3.event.shiftKey) return;
   
   function composeJsonPointSetString() {
     var locations = d3.selectAll("circle")[0].map(function(el) {
@@ -42,8 +44,10 @@ var drag = d3.behavior.drag()
       .append("circle")
       .attr("r", 10).attr("cx", x).attr("cy", y).attr("id","c"+counter)
       .call(drag)
-      .on("dblclick", 
+      .on("click", 
           function () {
+            if(!d3.event.shiftKey) return;
+            
               d3.select(this).remove();
               d3.event.stopPropagation();
               composeJsonPointSetString();
