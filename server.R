@@ -9,6 +9,10 @@ library(shiny)
 library(jsonlite)
 library(dendextend)
 
+vec_is_sorted <- function(v) {
+  return(sum(sort(v) == v) == length(v))
+}
+
 shinyServer(function(input, output, session) {
   
   points <- reactive({
@@ -36,7 +40,7 @@ shinyServer(function(input, output, session) {
   clusters <- reactive({
     if(is.null(h())) return(NULL)
     
-    if(max(diff(h()$height)) >= input$minDistance) {
+    if(vec_is_sorted(h()$height) && max(diff(h()$height)) >= input$minDistance) {
       c <- stats::cutree(h(),h=split_height())
     } else {
       c <- rep(1,nrow(points()))
@@ -59,18 +63,23 @@ shinyServer(function(input, output, session) {
   output$treePlot <- renderPlot({
     if(is.null(h()) || is.null(clusters())) return(NULL)
     
-    dend <- as.dendrogram(h())
-    max_branch_gap <- max(diff(h()$height))
+    hghts <- h()$height
     
-    # draw the histogram with the specified number of bins
-    plot(dend, main=sprintf("tree split at %.2f - maximum branching height gap is %.2f",split_height(),max_branch_gap))
-    
-    k <- length(unique(clusters()))
-    if(k > 1 && k < nrow(points()))
-    rect.dendrogram(dend, k=k, border = 8, lty = 5, lwd = 2)
-    
-    if(max_branch_gap >= input$minDistance) {
-      abline(h = split_height(), col="red", lty=2)
+    if(vec_is_sorted(hghts)) {
+      max_branch_gap <- max(diff(hghts))
+      
+      dend <- as.dendrogram(h())
+      plot(dend, main=sprintf("tree split at %.2f - maximum branching height gap is %.2f",split_height(),max_branch_gap))
+      
+      k <- length(unique(clusters()))
+      if(k > 1 && k < nrow(points()))
+      rect.dendrogram(dend, k=k, border = 8, lty = 5, lwd = 2)
+      
+      if(max_branch_gap >= input$minDistance) {
+        abline(h = split_height(), col="red", lty=2)
+      }
+    } else {
+      plot(h(), main="inversions present - hence no splitting performed")
     }
   })
   
@@ -81,7 +90,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$cssForPoints <- renderUI({
-    cols <- c("red","green","blue","orange","pink")
+    cols <- c("red","green","blue","orange","pink","brown","violet","gray","black")
     css <- paste(sprintf("#%s{fill:%s}", points()$id, cols[clusters()]), collapse="\n")
 
     return(tags$style(css))
@@ -96,14 +105,18 @@ shinyServer(function(input, output, session) {
     plot(density((h()$height)), main="density of branching heights", xlab="", ylab="")
     abline(v = split_height(), col="red", lty=2)
     
-    seq <- max(0,floor(min(hghts))):floor(max(hghts))
-    num <- sapply(seq, function(x){length(unique(stats::cutree(h(),h=x)))})
-    plot(seq, num, ylim=c(0,max(num)), xaxt="n", yaxt="n",
-         main="num of clusters (y) when cutting at height (x)",
-         xlab="", ylab="")
-    axis(1,at=seq)
-    axis(2,at=0:max(num))
-    abline(v = split_height(), col="red", lty=2)
+    if(vec_is_sorted(hghts)) {
+      seq <- max(0,floor(min(hghts))):floor(max(hghts))
+      num <- sapply(seq, function(x){length(unique(stats::cutree(h(),h=x)))})
+      plot(seq, num, ylim=c(0,max(num)), xaxt="n", yaxt="n",
+           main="num of clusters (y) when cutting at height (x)",
+           xlab="", ylab="")
+      axis(1,at=seq)
+      axis(2,at=0:max(num))
+      abline(v = split_height(), col="red", lty=2)
+    } else {
+      plot(NULL,xlim=c(0,1),ylim=c(0,1))
+    }
   })
   
 })
