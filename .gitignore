@@ -2,3 +2,4 @@
 *.Rproj
 .*
 shinyapps/*
+.Rproj.user
