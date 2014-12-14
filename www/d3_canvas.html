@@ -5,8 +5,8 @@ var canvas = d3.select("div#hereComesTheCanvas").append("svg").attr("width", 400
 var counter = 0;
 
 function addPoint(evt) {
-  
-  if(!d3.event.shiftKey) return;
+
+  if (d3.event.defaultPrevented) return;
   
   function composeJsonPointSetString() {
     var locations = d3.selectAll("circle")[0].map(function(el) {
@@ -31,9 +31,11 @@ var drag = d3.behavior.drag()
       
       d3.select(this).attr("cx",x);
       d3.select(this).attr("cy",y);
+      d3.event.stopPropagation();
     })
     .on("dragend", function(){
       composeJsonPointSetString();
+      d3.event.stopPropagation();
     });
 
   var mouse = d3.mouse(this);
@@ -46,7 +48,7 @@ var drag = d3.behavior.drag()
       .call(drag)
       .on("click", 
           function () {
-            if(!d3.event.shiftKey) return;
+            if (d3.event.defaultPrevented) return;
             
               d3.select(this).remove();
               d3.event.stopPropagation();

@@ -55,7 +55,7 @@ shinyUI(fluidPage(
       uiOutput("cssForPoints"),
       div(id="hereComesTheCanvas"),
       HTML(file_content("www/d3_canvas.html")),
-      tags$small("[Shift] + Click to add or remove a point."),
+      tags$small("Left-Click to add or remove a point. Points can be dragged."),
       
       textInput("jsonPoints", "", "[]")
     ),
