@@ -6,6 +6,9 @@ var counter = 0;
 
 function addPoint(evt) {
 
+  // (C0) in case of dragging the click event's propagation is stopped (stopPropagation())
+  // the click event is still triggered though. but defaultPrevented is then set to
+  // true. in that case no point should be added (removed).
   if (d3.event.defaultPrevented) return;
   
   function composeJsonPointSetString() {
@@ -31,10 +34,14 @@ var drag = d3.behavior.drag()
       
       d3.select(this).attr("cx",x);
       d3.select(this).attr("cy",y);
+      
+      // see (C0)
       d3.event.stopPropagation();
     })
     .on("dragend", function(){
       composeJsonPointSetString();
+      
+      // see (C0)
       d3.event.stopPropagation();
     });
 
@@ -48,6 +55,7 @@ var drag = d3.behavior.drag()
       .call(drag)
       .on("click", 
           function () {
+            // see (C0)
             if (d3.event.defaultPrevented) return;
             
               d3.select(this).remove();

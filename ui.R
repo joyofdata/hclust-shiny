@@ -1,10 +1,3 @@
-
-# This is the user-interface definition of a Shiny web application.
-# You can find out more about building applications with Shiny here:
-# 
-# http://www.rstudio.com/shiny/
-#
-
 library(shiny)
 
 file_content <- function(file) {
@@ -57,6 +50,7 @@ shinyUI(fluidPage(
       HTML(file_content("www/d3_canvas.html")),
       tags$small("Left-Click to add or remove a point. Points can be dragged."),
       
+      # this text input communicates the D3.js component state to the server
       textInput("jsonPoints", "", "[]")
     ),
     

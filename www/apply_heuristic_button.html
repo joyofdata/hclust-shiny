@@ -1,6 +1,10 @@
 <script>
   function applyHeuristic() {
+    // an empty field signals to server.R that the heuristic
+    // is supposed to be applied
     $("#splitTreeAt").val("");
+    
+    // trigger change event to have the reactive mechanics kick in
     $("#splitTreeAt").trigger("change");
   }
 </script>
