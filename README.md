@@ -7,6 +7,8 @@ For a quick start either
 - use the app on [shinyapps.io](https://joyofdata.shinyapps.io/hclust-shiny/)
 - or directly from RStudio: `shiny::runGitHub("hclust-shiny", "joyofdata")`
 
+(MIT licensed)
+
 ---
 
 ![hclust-shiny app screen shot](http://www.joyofdata.de/blog/wp-content/uploads/2014/12/hclust-shiny.jpeg)
